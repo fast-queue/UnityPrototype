@@ -25,7 +25,7 @@ public class Login : MonoBehaviour {
         }
         login.enabled = false;
         Manager.Instance.user = new User(Name.text, classes.value);
-        SceneManager.LoadScene("Rooms", LoadSceneMode.Additive);
+        SceneManager.LoadScene("Rooms");
     }
 
 }
