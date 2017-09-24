@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class User {
+public class Player : FQ.BaseBody {
 
     public string name;
     public int classe;
 
-    public User(string name, int classe)
+    public Player(string name, int classe)
     {
         this.name = name;
         this.classe = classe;

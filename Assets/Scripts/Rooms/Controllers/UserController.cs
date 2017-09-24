@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
-public class UserControll : MonoBehaviour {
+public class UserController : MonoBehaviour {
 
     public Text Name;
     public Text Class;
