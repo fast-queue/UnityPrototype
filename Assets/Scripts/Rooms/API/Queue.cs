@@ -3,6 +3,7 @@ using System.Collections;
 
 public class Queue : FQ.BaseBody{
     public int maxPlayers;
+    public int numPlayers;
     public string name;
 
     // Initialize the queue
@@ -10,15 +11,10 @@ public class Queue : FQ.BaseBody{
     {
         this.name = name;
         this.maxPlayers = maxPlayers;
-        // add the queue to the server when it's initilized
-        this._id = Manager.Instance.api.addQueue<Queue>(this)._id; // get the id from the server
+        this.numPlayers = 0;
     }
 
     // Delete the instance of the queue on server-side when it's deleted
-    ~Queue()
-    {
-        Manager.Instance.api.deleteQueue<Queue>(this);
-    }
 
     // Simple player quantity controll.
     public bool addPlayer(Player player)
@@ -28,6 +24,7 @@ public class Queue : FQ.BaseBody{
             return false;
         }
         Manager.Instance.api.addPlayer<Queue, Player>(this, player);
+        numPlayers++;
         return true;
     }
 

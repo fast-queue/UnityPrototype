@@ -19,6 +19,17 @@ namespace FQ {
             this.key = key;
         }
 
+        public T updateQueue<T> (T queue) where T : FQ.BaseBody {
+            var url = baseUrl + "/queue/" + queue._id;
+            return this.update<T>(url, queue);
+        }
+
+        public K updatePlayer<T, K> (T queue, K player) where T : FQ.BaseBody 
+                                                        where K : FQ.BaseBody {
+            var url = baseUrl + "/queue/" + queue._id + "/players/" + player._id;
+            return this.update<K>(url, player);
+        }
+
         public T deleteQueue<T> (T queue) where T : FQ.BaseBody {
             var url = baseUrl + "/queue/" + queue._id;
             return this.delete<T> (url);
@@ -48,7 +59,7 @@ namespace FQ {
             var queues = get<T> (url);
             if (queues.Length > 0)
                 return queues;
-            return null;
+            return new T[0];
         }
 
         public T getQueue<T> (T queue) where T : FQ.BaseBody {
@@ -100,6 +111,18 @@ namespace FQ {
             T response = convertResponse<T> (request);
             retObj._id = response._id;
             return retObj;
+        }
+
+        private T update<T> (string url, T obj) where T: FQ.BaseBody {
+            T retObj = obj;
+            var type = RequestType.Put;
+            if(obj == null) {
+                throw new Exception ("No object recived on post!");
+            }
+            var sendObj = objectToJSON(obj);
+            var request = this.Send (url, type, sendObj);
+            T response = convertResponse<T> (request);
+            return obj;
         }
 
         private T delete<T> (string url) {

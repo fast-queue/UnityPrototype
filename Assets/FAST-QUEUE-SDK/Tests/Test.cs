@@ -12,7 +12,7 @@ public class Test : MonoBehaviour {
     private Dictionary<string, MyQueueClass> queues;
     private Dictionary<string, MyPlayerClass> players;
 
-    const string url = "http://tcc-andre.ddns.net";
+    const string url = "http://fq-api.bovendorp.org";
     const string key = "testkeytoeveryone";
 
     RestApi api;
@@ -135,7 +135,19 @@ public class Test : MonoBehaviour {
 
     public void addPlayer (string name) {
         MyPlayerClass player = new MyPlayerClass (name);
-        var pl = api.addPlayer<MyQueueClass, MyPlayerClass> (queues[queue], player);
+        api.addPlayer<MyQueueClass, MyPlayerClass> (queues[queue], player);
+    }
+
+    public void updatePlayer (){
+        MyPlayerClass p = players[player];
+        p.name = "josefina12354";
+        api.updatePlayer<MyQueueClass, MyPlayerClass>(queues[queue], p);
+    }
+
+    public void updateQueue(){
+        MyQueueClass q = queues[queue];
+        q.name = "joaquina123456";
+        api.updateQueue<MyQueueClass>(q);
     }
 
 }

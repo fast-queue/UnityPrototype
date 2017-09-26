@@ -1,11 +1,13 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
+
 
 public class Manager : Singleton<Manager>
 {
     protected Manager() { } // guarantee this will be always a singleton only - can't use the constructor!
     public AudioSource Audio;
     public FQ.RestApi api;
-
+    public Dictionary<string, Queue> queues = new Dictionary<string, Queue>();
     void Awake()
     {
         if (!_instance)
