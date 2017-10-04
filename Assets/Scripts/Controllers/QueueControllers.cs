@@ -13,6 +13,10 @@ public class QueueControllers : MonoBehaviour {
     public GameObject canvas;
     //
 
+    // GUI
+    public GameObject playerGUI;
+    public GameObject queueGUI;
+
     // Rooms info
     public GameObject prefab;
     private List<Vector2> listPos = new List<Vector2>();
@@ -22,7 +26,6 @@ public class QueueControllers : MonoBehaviour {
 
     // Create room Input
     public InputField roomInputNameText;
-    //
 
     void Start() {
         queues = new Queue[0];
@@ -40,8 +43,13 @@ public class QueueControllers : MonoBehaviour {
         if (elapsed >= 1f)
         {
             elapsed = elapsed % 1f;
-            queues = Manager.Instance.api.getAllQueue<Queue>();
-            refreshRooms();
+            if(Manager.Instance.status == (int)Manager.State.LOBBY)
+            {
+                queueGUI.SetActive(true);
+                playerGUI.SetActive(false);
+                queues = Manager.Instance.api.getAllQueue<Queue>();
+                refreshRooms();
+            }
         }
     }
 
@@ -53,20 +61,53 @@ public class QueueControllers : MonoBehaviour {
         var respQ = Manager.Instance.api.addQueue<Queue>(q); // get the id from the server
         q._id = respQ._id;
         Manager.Instance.queues.Add(respQ._id, respQ);
+
+        //enter the room after creating it
+        enterRoom(respQ);
+    }
+
+    public void enterRoom(Queue q)
+    {
+        // set state to room
+        Manager.Instance.status = (int) Manager.State.ROOM;
+
+        // add player to room on server
+        var p = Manager.Instance.api.addPlayer<Queue, Player>(q, Manager.Instance.user);
+        
+        // set id to user manager
+        Manager.Instance.user._id = p._id;
+        // set player's room
+        GetComponent<PlayersController>().setQueue(q);
+    }
+
+    public void leaveRoom()
+    {
+        var pController = GetComponent<PlayersController>();
+        // remove user
+        Manager.Instance.api.deletePlayer<Queue, Player>(pController.getQueue(), Manager.Instance.user);
+        // set id to null           
+        Manager.Instance.user._id = null;
+        // set queue to null
+        pController.setQueue(null);
+        // set status to lobby
+        Manager.Instance.status = (int)Manager.State.LOBBY;
     }
 
     private void refreshRooms()
     {
         Manager.Instance.queues.Clear();
-        //if (queues.Length != Manager.Instance.queues.Count)
-        //{
+
         foreach (Queue q in queues)
         {
+            if(q.numPlayers == 0)
+            {
+                Manager.Instance.api.deleteQueue<Queue>(q);
+                continue;
+            }
             Manager.Instance.queues.Add(q._id, q);
         }
         destroyAllRooms();
         drawRooms();
-        //}
     }
 
     private void drawRooms()
@@ -79,6 +120,8 @@ public class QueueControllers : MonoBehaviour {
             r.transform.localScale = new Vector3(1, 1, 1);
             r.transform.localPosition = new Vector3(listPos[i - n].x, listPos[i - n].y, 5);
             r.tag = "Rooms";
+            // set queue on object
+            r.GetComponent<QueueObject>().queue = queues[i - n];
 
             //set room name
             var roomName = r.transform.Find("RoomName").GetComponent<Text>();

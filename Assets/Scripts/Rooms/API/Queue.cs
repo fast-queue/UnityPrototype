@@ -23,8 +23,8 @@ public class Queue : FQ.BaseBody{
         {
             return false;
         }
-        Manager.Instance.api.addPlayer<Queue, Player>(this, player);
         numPlayers++;
+        Manager.Instance.api.addPlayer<Queue, Player>(this, player);
         return true;
     }
 

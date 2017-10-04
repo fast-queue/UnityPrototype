@@ -5,9 +5,18 @@ using System.Collections.Generic;
 public class Manager : Singleton<Manager>
 {
     protected Manager() { } // guarantee this will be always a singleton only - can't use the constructor!
-    public AudioSource Audio;
+    private AudioSource[] sfx;
+
+    // api
     public FQ.RestApi api;
+
+    // Players and Queues
     public Dictionary<string, Queue> queues = new Dictionary<string, Queue>();
+    public Dictionary<string, Player> Players = new Dictionary<string, Player>();
+
+    public Player user;
+    public int status;
+
     void Awake()
     {
         if (!_instance)
@@ -20,10 +29,22 @@ public class Manager : Singleton<Manager>
         }
         api = new FQ.RestApi("http://fq-api.bovendorp.org", "testkeytoeveryone");
 
-        Audio = GetComponent<AudioSource>();
-        Audio.loop = true;
-        Audio.Play();
+        sfx = GetComponents<AudioSource>();
+        sfx[0].loop = true;
+        sfx[0].Play();
+
+        status = (int) State.MENU;
     }
 
-    public Player user;
+    public void playEnterButtonSFX()
+    {
+        if(!sfx[1].isPlaying)
+            sfx[1].Play();
+    }
+    public enum State
+    {
+        MENU = 0,
+        LOBBY,
+        ROOM
+    }
 }
