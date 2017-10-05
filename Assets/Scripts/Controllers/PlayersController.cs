@@ -82,6 +82,10 @@ public class PlayersController : MonoBehaviour {
             // setPlayerName
             var roomName = r.transform.Find("RoomName").GetComponent<Text>();
             roomName.text = players[i].name;
+
+            var classe = r.transform.Find("Text").GetComponent<Text>();
+            classe.text = players[i].getClassText();
+
         }
     }
 
