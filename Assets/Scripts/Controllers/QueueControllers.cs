@@ -24,6 +24,8 @@ public class QueueControllers : MonoBehaviour {
     private Vector2 size = new Vector2(300, 150);
     //
 
+    public Text message;
+
     // Create room Input
     public InputField roomInputNameText;
 
@@ -55,36 +57,40 @@ public class QueueControllers : MonoBehaviour {
 
     public void createRoom()
     {
-        // The queue is responsible to existing itself
-        Queue q = new Queue(roomInputNameText.text, 5);
-        // add the queue to the server when it's initilized
-        var respQ = Manager.Instance.api.addQueue<Queue>(q); // get the id from the server
-        q._id = respQ._id;
-        Manager.Instance.queues.Add(respQ._id, respQ);
+        if(roomInputNameText.text != "" && roomInputNameText != null){
+            // The queue is responsible to existing itself
+            Queue q = new Queue(roomInputNameText.text, 5);
+            // add the queue to the server when it's initilized
+            var respQ = Manager.Instance.api.addQueue<Queue>(q); // get the id from the server
+            q._id = respQ._id;
+            Manager.Instance.queues.Add(respQ._id, respQ);
 
-        //enter the room after creating it
-        enterRoom(respQ);
+            //enter the room after creating it
+            enterRoom(respQ);
+            return;
+        }
+        message.text = "Insert a name for room";
     }
 
     public void enterRoom(Queue q)
     {
-        // set state to room
-        Manager.Instance.status = (int) Manager.State.ROOM;
+        if (q.addPlayer(Manager.Instance.user)){
+            // delete rooms from UI
+            destroyAllRooms();
 
-        // add player to room on server
-        var p = Manager.Instance.api.addPlayer<Queue, Player>(q, Manager.Instance.user);
-        
-        // set id to user manager
-        Manager.Instance.user._id = p._id;
-        // set player's room
-        GetComponent<PlayersController>().setQueue(q);
+            // set state to room
+            Manager.Instance.status = (int) Manager.State.ROOM;
+            GetComponent<PlayersController>().setQueue(q);
+            return;
+        } 
+        message.text = "Max players reached on room";
     }
 
     public void leaveRoom()
     {
         var pController = GetComponent<PlayersController>();
-        // remove user
-        Manager.Instance.api.deletePlayer<Queue, Player>(pController.getQueue(), Manager.Instance.user);
+        // remove player from queue
+        pController.getQueue().removePlayer(Manager.Instance.user);
         // set id to null           
         Manager.Instance.user._id = null;
         // set queue to null
@@ -99,11 +105,12 @@ public class QueueControllers : MonoBehaviour {
 
         foreach (Queue q in queues)
         {
-            if(q.numPlayers == 0)
-            {
-                Manager.Instance.api.deleteQueue<Queue>(q);
-                continue;
-            }
+            // Delete in case of no players
+            // if(q.numPlayers == 0)
+            // {
+            //     Manager.Instance.api.deleteQueue<Queue>(q);
+            //     continue;
+            // }
             Manager.Instance.queues.Add(q._id, q);
         }
         destroyAllRooms();

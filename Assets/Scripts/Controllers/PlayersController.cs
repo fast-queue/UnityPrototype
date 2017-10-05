@@ -114,6 +114,7 @@ public class PlayersController : MonoBehaviour {
         if(queue != null)
         {
             Manager.Instance.api.deletePlayer<Queue, Player>(queue, Manager.Instance.user);
+            Manager.Instance.api.updateQueue<Queue>(queue);
         }
     }
 }

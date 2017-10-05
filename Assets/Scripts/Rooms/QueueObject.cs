@@ -7,7 +7,7 @@ public class QueueObject : MonoBehaviour {
 
     public void enterRoom()
     {
-        GameObject.Find("Roooms").GetComponent<QueueControllers>().enterRoom(queue);
+        GameObject.Find("Rooms").GetComponent<QueueControllers>().enterRoom(queue);
     }
     
 }

@@ -19,13 +19,40 @@ public class Queue : FQ.BaseBody{
     // Simple player quantity controll.
     public bool addPlayer(Player player)
     {
-        if (Manager.Instance.api.getPlayers<Queue, Player>(this).Length >= this.maxPlayers)
+        if (this.numPlayers >= this.maxPlayers)
         {
             return false;
         }
         numPlayers++;
-        Manager.Instance.api.addPlayer<Queue, Player>(this, player);
+        // add player on server
+        var p = Manager.Instance.api.addPlayer<Queue, Player>(this, player);
+        // set user_id on manager
+        Manager.Instance.user._id = p._id;
+
+        // update this queue on server
+        Manager.Instance.api.updateQueue<Queue>(this);
+
         return true;
+    }
+
+    public bool removePlayer(Player player) {
+        // remove player from queue
+        Manager.Instance.api.deletePlayer<Queue, Player>(this, player);
+        
+        // update queue for user num controll
+        var _this = Manager.Instance.api.getQueue<Queue>(this);
+        // update numPlayers before update
+        this.numPlayers = _this.numPlayers;
+        if(numPlayers > 0){
+            numPlayers --;
+        }
+        Manager.Instance.api.updateQueue<Queue>(this);
+        
+        return true;
+    }
+
+    public string toJson(){
+        return "{ \"name\": \"" + this.name + "\", \" maxPlayers \" : " + this.maxPlayers + " , \" numPlayers\" : " + this.numPlayers + " }";
     }
 
 }
