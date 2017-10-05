@@ -35,10 +35,6 @@ public class Manager : Singleton<Manager>
 
         status = (int) State.MENU;
     }
-    
-    public void leaveGame(){
-        Application.Quit();
-    }
 
     public void playEnterButtonSFX()
     {

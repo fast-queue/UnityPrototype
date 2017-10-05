@@ -27,4 +27,7 @@ public class Login : MonoBehaviour {
         SceneManager.LoadScene("Rooms");
     }
 
+    public void leaveGame(){
+        Application.Quit();
+    }
 }

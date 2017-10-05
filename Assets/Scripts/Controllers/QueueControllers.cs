@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class QueueControllers : MonoBehaviour {
 
@@ -37,6 +38,17 @@ public class QueueControllers : MonoBehaviour {
         listPos.Add(new Vector2(189, 147));
         listPos.Add(new Vector2(189, 26));
         listPos.Add(new Vector2(189, -97));
+    }
+
+    public void doLogout(){
+        // Play sound on manager
+        Manager.Instance.playEnterButtonSFX();
+
+        // set status to lobby
+        Manager.Instance.status = (int)Manager.State.MENU;
+
+        Manager.Instance.user = null;
+        SceneManager.LoadScene("Login Scene", LoadSceneMode.Single);
     }
 
     void Update()
@@ -112,6 +124,7 @@ public class QueueControllers : MonoBehaviour {
             //     continue;
             // }
             Manager.Instance.queues.Add(q._id, q);
+            Debug.Log(q.toJson());
         }
         destroyAllRooms();
         drawRooms();
